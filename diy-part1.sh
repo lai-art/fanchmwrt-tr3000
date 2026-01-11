@@ -14,7 +14,7 @@
 #sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
 
 # Add a feed source
-echo 'src-git filebrowser https://github.com/kiddin9/openwrt-filebrowser.git' >>feeds.conf.default
+# echo 'src-git filebrowser https://github.com/kiddin9/openwrt-filebrowser.git' >>feeds.conf.default
 # echo 'src-git timedreboot https://github.com/kiddin9/luci-app-timedreboot.git' >>feeds.conf.default
 echo 'src-git gecoosac https://github.com/lwb1978/openwrt-gecoosac.git' >>feeds.conf.default
 echo 'src-git ddnsgo  https://github.com/sirpdboy/luci-app-ddns-go' >>feeds.conf.default

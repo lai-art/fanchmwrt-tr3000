@@ -66,23 +66,23 @@ jobs:
         cd fanchmwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
        
-    - name: 修改固件内置软件源  # 修复YAML语法，适配fanchmwrt源
-      run: |  # 关键修复：添加|表示多行命令，统一缩进为2个空格
-        cd fanchmwrt
+  #  - name: 修改固件内置软件源  # 修复YAML语法，适配fanchmwrt源
+  #    run: |  # 关键修复：添加|表示多行命令，统一缩进为2个空格
+  #      cd fanchmwrt
         # 创建自定义files目录（覆盖固件/etc/opkg配置）
-        mkdir -p files/etc/opkg
+  #      mkdir -p files/etc/opkg
         # 适配fanchmwrt的软件源（优先用官方源，或替换为国内镜像）
         # 注意：如果fanchmwrt无专属镜像，可保留官方源或替换为通用国内源
-        cat > files/etc/opkg/distfeeds.conf << EOF
-        src/gz fanchmwrt_core https://github.com/fanchmwrt/fanchmwrt/releases/download/fanchmwrt-24.10.4/packages/x86_64/core
-        src/gz fanchmwrt_base https://github.com/fanchmwrt/fanchmwrt/releases/download/fanchmwrt-24.10.4/packages/x86_64/base
-        src/gz fanchmwrt_luci https://github.com/fanchmwrt/fanchmwrt/releases/download/fanchmwrt-24.10.4/packages/x86_64/luci
-        src/gz fanchmwrt_packages https://github.com/fanchmwrt/fanchmwrt/releases/download/fanchmwrt-24.10.4/packages/x86_64/packages
-        src/gz fanchmwrt_routing https://github.com/fanchmwrt/fanchmwrt/releases/download/fanchmwrt-24.10.4/packages/x86_64/routing
-        src/gz fanchmwrt_telephony https://github.com/fanchmwrt/fanchmwrt/releases/download/fanchmwrt-24.10.4/packages/x86_64/telephony
-        EOF
+   #     cat > files/etc/opkg/distfeeds.conf << EOF
+    #    src/gz fanchmwrt_core https://github.com/fanchmwrt/fanchmwrt/releases/download/fanchmwrt-24.10.4/packages/x86_64/core
+   #     src/gz fanchmwrt_base https://github.com/fanchmwrt/fanchmwrt/releases/download/fanchmwrt-24.10.4/packages/x86_64/base
+   #     src/gz fanchmwrt_luci https://github.com/fanchmwrt/fanchmwrt/releases/download/fanchmwrt-24.10.4/packages/x86_64/luci
+    #    src/gz fanchmwrt_packages https://github.com/fanchmwrt/fanchmwrt/releases/download/fanchmwrt-24.10.4/packages/x86_64/packages
+    #    src/gz fanchmwrt_routing https://github.com/fanchmwrt/fanchmwrt/releases/download/fanchmwrt-24.10.4/packages/x86_64/routing
+     #   src/gz fanchmwrt_telephony https://github.com/fanchmwrt/fanchmwrt/releases/download/fanchmwrt-24.10.4/packages/x86_64/telephony
+   #     EOF
         # 可选：关闭opkg签名校验（第三方源可能无校验文件）
-        echo "option check_signature false" >> files/etc/opkg.conf
+    #    echo "option check_signature false" >> files/etc/opkg.conf
 
     - name: 下载软件包(Download package)
       id: package

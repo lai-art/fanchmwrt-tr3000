@@ -1,11 +1,11 @@
-name: 编译FanchmWrt
+name: 编译 FanchmWrt
 
 on:
   repository_dispatch:
   workflow_dispatch:
 # 核心新增：配置GITHUB_TOKEN权限
 permissions:
-  contents: write  # 授予创建/修改Release、删除资产的权限
+  contents: write  # 授予创建/修改Release的权限
   actions: write   # 可选：如果需要删除旧Workflow Runs，补充这个权限
 env:
   REPO_URL: https://github.com/fanchmwrt/fanchmwrt/
@@ -131,61 +131,6 @@ jobs:
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
         overwrite: true  # 可选：如果重复打标签，允许覆盖
-
-    - name: 删除 Release 中指定的文件
-      if: steps.tag.outputs.status == 'success' && !cancelled()
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        RELEASE_TAG: ${{ steps.tag.outputs.release_tag }}
-        # ########## 核心配置：修改这里为你要删除的文件（支持精确名称/通配符） ##########
-        FILES_TO_DELETE: "*.buildinfo *.log README.txt *.bin *.rootfs.tar.gz *.manifest *.json
-
-
-"  # 示例：删除日志、README、调试版固件
-      run: |
-        # 安装jq（用于解析JSON）
-        sudo apt-get install -y jq
-        
-        # 获取仓库全称（格式：owner/repo）
-        REPO_FULL_NAME="${{ github.repository }}"
-        
-        # 获取Release的ID（通过tag名称）
-        RELEASE_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/$REPO_FULL_NAME/releases/tags/$RELEASE_TAG" | jq -r .id)
-        
-        if [ "$RELEASE_ID" = "null" ]; then
-          echo "Error: 未找到标签为 $RELEASE_TAG 的Release"
-          exit 1
-        fi
-        
-        # 获取该Release下的所有资产（文件）列表
-        ASSETS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/$REPO_FULL_NAME/releases/$RELEASE_ID/assets")
-        
-        # 遍历要删除的文件规则，匹配并删除
-        for FILE_PATTERN in $FILES_TO_DELETE; do
-          # 筛选出匹配当前规则的资产ID和文件名
-          ASSET_IDS=$(echo "$ASSETS" | jq -r --arg pattern "$FILE_PATTERN" \
-            '.[] | select(.name | test($pattern; "ix")) | .id')
-          
-          if [ -z "$ASSET_IDS" ] || [ "$ASSET_IDS" = "null" ]; then
-            echo "未找到匹配 '$FILE_PATTERN' 的文件，跳过删除"
-            continue
-          fi
-          
-          # 删除每个匹配的资产
-          for ASSET_ID in $ASSET_IDS; do
-            echo "正在删除Release文件：ID=$ASSET_ID（匹配规则：$FILE_PATTERN）"
-            curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/repos/$REPO_FULL_NAME/releases/assets/$ASSET_ID"
-            
-            if [ $? -eq 0 ]; then
-              echo "成功删除文件 ID=$ASSET_ID"
-            else
-              echo "删除文件 ID=$ASSET_ID 失败"
-            fi
-          done
-        done
 
     - name: 删除运行的工作流(Delete workflow runs)
       uses: Mattraks/delete-workflow-runs@main

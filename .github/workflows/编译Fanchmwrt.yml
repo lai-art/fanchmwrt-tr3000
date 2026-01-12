@@ -119,8 +119,10 @@ jobs:
         echo "## FanchmWrt 固件编译自动发布" > release.txt
         echo "- 编译时间：$(date +"%Y-%m-%d %H:%M:%S")" >> release.txt
         echo "- 设备型号：${{ env.DEVICE_NAME }}" >> release.txt
+        echo "- 固件名称：openwrt-x86-64-generic-squashfs-combined-efi.img.gz" >> release.txt
         [ ${UPLOAD_GOFILE} = true && ${{ steps.gofile.outputs.url }} ] && echo "🔗 [GoFile](${{ steps.gofile.outputs.url }})" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
+        
     - name: 上传固件到 Release（Upload firmware to release）
       uses: softprops/action-gh-release@v1  # 替换为稳定版v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
@@ -129,7 +131,7 @@ jobs:
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+        files: ${{ env.FIRMWARE }}/openwrt-x86-64-generic-squashfs-combined-efi.img.gz
         overwrite: true  # 可选：如果重复打标签，允许覆盖
 
     - name: 删除运行的工作流(Delete workflow runs)
